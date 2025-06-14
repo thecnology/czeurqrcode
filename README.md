@@ -49,7 +49,6 @@ $request=new PaymentRequest(
     accountNumber: '100000', // Account number
     bankCode: '2010', // Bank code
     variableSymbol: '123456789', // Variable symbol
-    factory: new PaymentRequestFactory() // Factory for creating payment requests
 );
 header('Content-Type: '.'image/png');
 echo $qr->getQrCode(qrData: $request->getQrCodeData(),qrLabel: 'Děkujeme za zaplacení!')->getString();
@@ -65,7 +64,7 @@ $request=new PaymentRequest(
     iban: 'CZ650 0000000000000000000000', // IBAN
     bic: 'FIOBCZPPXXX', // BIC
     recipientName: 'Recipient name', // Recipient name - Only for SEPA QR
-    factory: new PaymentRequestFactory() // Factory for creating payment requests
+
 );
 header('Content-Type: '.'image/png');
 echo $qr->getQrCode(qrData: $request->getQrCodeData(),qrLabel: 'Děkujeme za zaplacení!')->getString();
