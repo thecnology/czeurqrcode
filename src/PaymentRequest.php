@@ -67,7 +67,7 @@ class PaymentRequest
             ->setIban($this->iban)
             ->setBic($this->bic)
             ->setCurrency($this->currency)
-            ->setRemittanceText($this->formatMessage())
+            ->setInformation($this->formatMessage())
             ->setAmount($this->amount); // The amount in Euro
 
         return $sepa->__toString();
