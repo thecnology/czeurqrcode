@@ -19,6 +19,19 @@ use Endroid\QrCode\Writer\Result\ResultInterface;
 class QrCodeGenerator
 {
 
+
+    public function __construct(
+        private int $size = 300,
+        private int $margin = 10,
+        private ErrorCorrectionLevel $errorCorrectionLevel = ErrorCorrectionLevel::Low,
+        private ?RoundBlockSizeMode $roundBlockSizeMode = RoundBlockSizeMode::Margin,
+        private ?Logo $logo = null,
+        private ?Color $foregroundColor = null,
+        private ?Color $background = null,
+        private ?Color $labelColor = null
+    ) {
+    }
+
     /**
      * Generates a QR code with the given data and label.
      *
@@ -29,23 +42,22 @@ class QrCodeGenerator
      */
     public function getQrCode(string $qrData, string $qrLabel): ResultInterface
     {
-
         return (new PngWriter())->write(
             qrCode: new QrCode(
                 data: $qrData,
                 encoding: new Encoding('UTF-8'),
-                errorCorrectionLevel: ErrorCorrectionLevel::Low,
-                size: 300,
-                margin: 10,
-                roundBlockSizeMode: RoundBlockSizeMode::Margin,
-                foregroundColor: new Color(0, 0, 0),
-                backgroundColor: new Color(255, 255, 255)
+                errorCorrectionLevel: $this->errorCorrectionLevel,
+                size: $this->size,
+                margin: $this->margin,
+                roundBlockSizeMode: $this->roundBlockSizeMode,
+                foregroundColor: $this->foregroundColor ?? new Color(0, 0, 0),
+                backgroundColor: $this->foregroundColor ?? new Color(255, 255, 255)
             )
             ,
-            logo: null,
+            logo: $this->logo,
             label: new Label(
                 text: $qrLabel,
-                textColor: new Color(0, 0, 0)
+                textColor: $this->labelColor ?? new Color(0, 0, 0),
             )
         );
     }
