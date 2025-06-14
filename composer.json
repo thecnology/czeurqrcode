@@ -1,0 +1,33 @@
+{
+  "name": "thecnology/czeurqrcode",
+  "type": "library",
+  "description": "UniversalQRCodeGenerator",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Vitězslav Kiš",
+      "email": "thecnology@gmail.com"
+    }
+  ],
+
+  "require": {
+    "php": "^8.0.0",
+    "sunfoxcz/spayd-php": "^2.0",
+    "endroid/qr-code": "^6.0",
+    "smhg/sepa-qr-data": "^3.0",
+    "phpunit/phpunit": "^12.2.2"
+  },
+  "autoload": {
+    "psr-4": {
+      "thecnology\\CzEurQrCode\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "thecnology\\CzEurQrCode\\Tests\\": "tests/"
+    }
+  },
+  "minimum-stability": "stable",
+  "prefer-stable": true
+
+}
