@@ -8,7 +8,7 @@ use DateTime;
 use SepaQr\SepaQrData;
 use Sunfox\Spayd\Model\CzechAccount;
 use Sunfox\Spayd\Spayd;
-use UQR\Factory\PaymentRequestFactory;
+use thecnology\czeurqrcode\PaymentRequestFactory;
 
 class PaymentRequest
 {
