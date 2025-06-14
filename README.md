@@ -60,11 +60,11 @@ echo $qr->getQrCode(qrData: $request->getQrCodeData(),qrLabel: 'Děkujeme za zap
 $qr = new QrCodeGenerator();
 $request=new PaymentRequest(
     amount: 100.00, // Amount
-    currency: PaymentRequest::CURRENCY_CZK, // Currency
+    currency: PaymentRequest::CURRENCY_EUR, // Currency
     message: 'Nejaka zprava co uvidi vlastnik uctu pri prijeti platby', // Message
     iban: 'CZ650 0000000000000000000000', // IBAN
     bic: 'FIOBCZPPXXX', // BIC
-    recipientName: 'Vitezslav Kis', // Recipient name - Only for SEPA QR
+    recipientName: 'Recipient name', // Recipient name - Only for SEPA QR
     factory: new PaymentRequestFactory() // Factory for creating payment requests
 );
 header('Content-Type: '.'image/png');
