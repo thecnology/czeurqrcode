@@ -51,6 +51,7 @@ class PaymentRequest
         if ($this->variableSymbol !== null) {
             $spayd->add('X-VS', $this->variableSymbol);
         }
+
         $account = $this->factory->createCzechAccount($this->accountNumber,$this->bankCode);
         $spayd->add('ACC', $this->factory->computeIban($account));
 
