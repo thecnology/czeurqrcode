@@ -36,6 +36,16 @@ Proto jsem si vytvořil tento balíček, který umožňuje snadné generování 
 composer require thecnology/czeurqrcode
 ```
 
+## Instalace skrz Docker
+```bash
+docker pull djvitto/czeurqrcode:latest
+
+docker run -d -p 8080:80 --name czeurqrcode djvitto/czeurqrcode:latest
+
+a skrz url http://localhost:8888/?bankCode=2010&accountNumber=123546790&amount=100&currency=CZK&iban=CZ8620100000002900833787&size=300&vs=123456789&message=Test%20message&label=Děkujeme! 
+
+```
+
 
 ## Příklad použití
 
