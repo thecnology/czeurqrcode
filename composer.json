@@ -21,12 +21,12 @@
   },
   "autoload": {
     "psr-4": {
-      "thecnology\\CzEurQrCode\\": "src/"
+      "thecnology\\czeurqrcode\\": "src/"
     }
   },
   "autoload-dev": {
     "psr-4": {
-      "thecnology\\CzEurQrCode\\Tests\\": "tests/"
+      "thecnology\\czeurqrcode\\Tests\\": "tests/"
     }
   },
   "minimum-stability": "stable",
