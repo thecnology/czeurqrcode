@@ -5,7 +5,7 @@ RUN apt update && \
     apt install -y git pkg-config
 
 RUN apt-get -y --no-install-recommends install cmake make git gcc g++ libbz2-dev libstxxl-dev libstxxl1v5 libxml2-dev \
-    libzip-dev unzip libboost-all-dev lua5.2 liblua5.2-dev libtbb-dev libc-client-dev libkrb5-dev \
+    libzip-dev unzip libboost-all-dev lua5.2 liblua5.2-dev libtbb-dev libc-client-dev libkrb5-dev xz-utils \
     -o APT::Install-Suggests=0 -o APT::Install-Recommends=0
 
 RUN apt-get install -y libfreetype6-dev libjpeg62-turbo-dev libmcrypt-dev libxml2-dev

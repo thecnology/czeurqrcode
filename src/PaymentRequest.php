@@ -15,6 +15,9 @@ class PaymentRequest
     public const CURRENCY_CZK = 'CZK';
     public const CURRENCY_EUR = 'EUR';
 
+    public const COUNTRY_CZ = 'CZ';
+    public const COUNTRY_SK = 'SK';
+
     private PaymentRequestFactory $factory;
 
     public function __construct(
@@ -27,6 +30,7 @@ class PaymentRequest
         private ?string $iban = null,
         private ?string $bic = null,
         private ?string $recipientName = null,
+        private ?string $country = null,
         ?PaymentRequestFactory $factory = null
     ) {
         $this->factory = $factory ?? new PaymentRequestFactory();
@@ -36,6 +40,12 @@ class PaymentRequest
     {
         if ($this->iban === null && ($this->accountNumber === null || $this->bankCode === null)) {
             throw new \InvalidArgumentException('Either IBAN or account number must be provided.');
+        }
+        if ($this->country === self::COUNTRY_SK) {
+            if ($this->iban === null) {
+                throw new \InvalidArgumentException('IBAN is required for Slovak (Pay by Square) payments.');
+            }
+            return $this->getPayBySquareString();
         }
         if ($this->accountNumber !== null && $this->bankCode !== null && $this->currency === self::CURRENCY_CZK) {
             return $this->getSpaydString();
@@ -59,6 +69,20 @@ class PaymentRequest
         }
 
         return $spayd->generate();
+    }
+
+    private function getPayBySquareString(): string
+    {
+        $payment = $this->factory->createPayBySquare($this->iban);
+        $payment->setAmount($this->amount);
+        $payment->setCurrency($this->currency);
+        if ($this->variableSymbol !== null) {
+            $payment->setVariableSymbol($this->variableSymbol);
+        }
+        if ($this->message !== '') {
+            $payment->setComment($this->formatMessage());
+        }
+        return $payment->getQrString();
     }
 
     private function getSepaString(): string
