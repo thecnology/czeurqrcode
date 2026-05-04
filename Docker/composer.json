@@ -1,10 +1,10 @@
 {
   "require": {
     "php": "^8.0.0",
-    "thecnology/czeurqrcode": "1.0.2",
+    "thecnology/czeurqrcode": "1.0.7",
     "sunfoxcz/spayd-php": "^2.0",
     "endroid/qr-code": "^6.0",
-    "smhg/sepa-qr-data": "^3.0"
-
+    "smhg/sepa-qr-data": "^3.0",
+    "rikudou/skqrpayment": "^4.2"
    }
 }

@@ -68,6 +68,19 @@ class BankPaymentValidator extends GetValidator {
         return $this;
     }
 
+    // Validace země (volitelné, pro vynucení formátu QR — např. 'SK' = Pay by Square)
+    public function country($field, $allowedCountries = ['CZ', 'SK'], $message = null) {
+        if (isset($this->data[$field]) && $this->data[$field] !== '') {
+            $country = strtoupper($this->data[$field]);
+            if (!in_array($country, $allowedCountries)) {
+                $this->errors[$field][] = $message ?? "Neplatná země. Povolené: " . implode(', ', $allowedCountries);
+            } else {
+                $this->data[$field] = $country;
+            }
+        }
+        return $this;
+    }
+
     // Validace variabilního symbolu
     public function variableSymbol($field, $message = null) {
         if (isset($this->data[$field])) {
