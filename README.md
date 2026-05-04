@@ -53,14 +53,48 @@ composer require thecnology/czeurqrcode
 > - Docker image v tomto repu už `xz-utils` obsahuje.
 
 ## Instalace skrz Docker
+
 ```bash
 docker pull djvitto/czeurqrcode:latest
-
 docker run -d -p 8080:80 --name czeurqrcode djvitto/czeurqrcode:latest
-
-a skrz url http://localhost:8888/?bankCode=2010&accountNumber=123546790&amount=100&currency=CZK&iban=CZ8620100000002900833787&size=300&vs=123456789&message=Test%20message&label=Děkujeme! 
-
 ```
+
+Image obsahuje HTTP endpoint, který přijímá URL parametry a vrací PNG s QR kódem.
+
+### Docker URL příklady
+
+#### CZ — Česká QR platba (SPAYD)
+```
+http://localhost:8080/?bankCode=2010&accountNumber=123456789&amount=100&currency=CZK&vs=123456789&message=Test&size=300&label=Děkujeme!
+```
+
+#### SK — Slovenská QR platba (Pay by Square)
+Vyžaduje `country=SK` + IBAN. Bez `country=SK` by se vygenerovala SEPA.
+```
+http://localhost:8080/?amount=100&currency=EUR&country=SK&iban=SK6807200002891987426353&vs=123456&message=Platba&size=300&label=Ďakujeme!
+```
+
+#### EU — SEPA platba
+```
+http://localhost:8080/?amount=100&currency=EUR&iban=CZ6508000000192000145399&swift=GIBACZPX&recipientName=Jan%20Novak&message=Test&size=300&label=Děkujeme!
+```
+
+### Podporované URL parametry
+
+| Parametr        | Povinný            | Popis                                                |
+|-----------------|--------------------|------------------------------------------------------|
+| `amount`        | ✓                  | Částka                                               |
+| `currency`      | ✓                  | `CZK` / `EUR` / `USD`                                |
+| `country`       | – (jen pro SK)     | `SK` vynutí Pay by Square, `CZ` ponechá SPAYD        |
+| `bankCode`      | – (jen pro CZ)     | Kód banky (CZ)                                       |
+| `accountNumber` | – (jen pro CZ)     | Číslo účtu (CZ)                                      |
+| `iban`          | – (povinný pro SK/EU) | IBAN                                              |
+| `swift`         | – (pro SEPA)       | BIC/SWIFT kód                                        |
+| `recipientName` | – (pro SEPA)       | Jméno příjemce                                       |
+| `vs`            | –                  | Variabilní symbol                                    |
+| `message`       | –                  | Zpráva (max 35 znaků)                                |
+| `size`          | –                  | Velikost QR (50–300 px)                              |
+| `label`         | –                  | Popisek pod QR kódem                                 |
 
 
 ## Příklady použití

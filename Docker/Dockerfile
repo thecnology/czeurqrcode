@@ -27,9 +27,6 @@ RUN docker-php-ext-install bcmath
 WORKDIR /var/www/html
 
 COPY . /var/www/html
-COPY thecnology/QrCodeGenerator.php /var/www/html/QrCodeGenerator.php
-COPY thecnology/PaymentRequestFactory.php /var/www/html/PaymentRequestFactory.php
-COPY thecnology/PaymentRequest.php /var/www/html/PaymentRequest.php
 
 RUN composer install --ignore-platform-req=ext-http
 
