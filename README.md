@@ -1,8 +1,10 @@
 # CzEurQrCode
 
-thanks to [Endroid QR Code]( https://github.com/endroid/qr-code ) for QR code generation 
+thanks to [Endroid QR Code]( https://github.com/endroid/qr-code ) for QR code generation
 
 thanks to [sunfoxcz/spayd-php](https://github.com/sunfoxcz/spayd-php) for SPAYD payment request generation
+
+thanks to [rikudou/skqrpayment](https://github.com/RikudouSage/QrPaymentSK) for Slovak Pay by Square generation
 
 
 ## Popis
@@ -11,30 +13,44 @@ Balíček pro generování QR kódů s automatickou detekcí typu platby
 
 Tento balíček vytváří QR kódy pro platby s inteligentní logikou:
 
-- **Pro CZK platby** → Generuje **QR platbu** (český standard)
+- **Pro CZK platby** → Generuje **českou QR platbu** (SPAYD)
+- **Pro EUR + `country: 'SK'`** → Generuje **slovenskou Pay by Square** platbu
 - **Pro ostatní měny** → Generuje **SEPA platbu** (evropský standard)
 
 ## Funkčnost
 
-Balíček automaticky rozpozná měnu z obsahu platebních údajů a podle toho vybere odpovídající formát:
+Balíček rozpozná správný formát na základě parametrů (currency, country, IBAN/účet) a podle toho vybere odpovídající standard:
 
-- Detekuje měnu z platebních informací
-- Aplikuje správný standard (QR platba vs SEPA)
+- **CZK + číslo účtu/kód banky** → Česká QR platba (SPAYD)
+- **EUR + `country: 'SK'` + IBAN** → Slovenská QR platba (Pay by Square)
+- **Ostatní (EUR/USD/... + IBAN)** → SEPA platba (evropský standard)
 - Vrací hotový QR kód připravený k použití
 - Možnost přizpůsobení vzhledu QR kódu (velikost, barvy, text)
-- Podpora pro české QR platby (SPAYD) a mezinárodní SEPA platby
 - Podpora pro přidání loga do QR kódu
+
+### Tabulka rozhodování
+
+| currency | country | IBAN | účet+banka | Výsledek          |
+|----------|---------|------|------------|-------------------|
+| CZK      | –       | –    | ✓          | SPAYD (CZ)        |
+| EUR      | `SK`    | ✓    | –          | Pay by Square (SK)|
+| EUR/jiné | – / `null` | ✓ | –          | SEPA (EU)         |
 
 ## Použití
 
-Ideální pro aplikace, které potřebují podporovat jak české QR platby, tak mezinárodní SEPA převody v jednom řešení.
-Proto jsem si vytvořil tento balíček, který umožňuje snadné generování QR kódů pro různé platební standardy bez nutnosti psát vlastní logiku pro detekci měny a formátu platby.
+Ideální pro aplikace, které potřebují podporovat české QR platby, slovenské Pay by Square i mezinárodní SEPA převody v jednom řešení.
+Balíček umožňuje snadné generování QR kódů pro různé platební standardy bez nutnosti psát vlastní logiku detekce.
 
 
 ## Instalace
 ```bash
 composer require thecnology/czeurqrcode
 ```
+
+> ℹ️ Pro slovenské Pay by Square platby je vyžadována binárka `xz` v systému (LZMA1 komprese).
+> - Linux (Debian/Ubuntu): `apt install xz-utils`
+> - macOS: `brew install xz`
+> - Docker image v tomto repu už `xz-utils` obsahuje.
 
 ## Instalace skrz Docker
 ```bash
@@ -47,37 +63,62 @@ a skrz url http://localhost:8888/?bankCode=2010&accountNumber=123546790&amount=1
 ```
 
 
-## Příklad použití
+## Příklady použití
+
+### CZ — Česká QR platba (SPAYD)
+
+Pro tuzemské CZK platby použij číslo účtu + kód banky. Knihovna vygeneruje SPAYD.
 
 ```php
-//pro generování QR kódu pro CZK platbu
 $qr = new QrCodeGenerator();
-$request=new PaymentRequest(
-    amount: 100.00, // Amount
-    currency: PaymentRequest::CURRENCY_CZK, // Currency
-    message: 'Nejaka zprava co uvidi vlastnik uctu pri prijeti platby', // Message
-    accountNumber: '100000', // Account number
-    bankCode: '2010', // Bank code
-    variableSymbol: '123456789', // Variable symbol
+$request = new PaymentRequest(
+    amount: 100.00,
+    currency: PaymentRequest::CURRENCY_CZK,
+    message: 'Nejaka zprava co uvidi vlastnik uctu pri prijeti platby',
+    accountNumber: '100000',
+    bankCode: '2010',
+    variableSymbol: '123456789',
 );
-header('Content-Type: '.'image/png');
-echo $qr->getQrCode(qrData: $request->getQrCodeData(),qrLabel: 'Děkujeme za zaplacení!')->getString();
+header('Content-Type: image/png');
+echo $qr->getQrCode(qrData: $request->getQrCodeData(), qrLabel: 'Děkujeme za zaplacení!')->getString();
 ```
 
-```php
-//pro generování QR kódu pro SEPA platbu
-$qr = new QrCodeGenerator();
-$request=new PaymentRequest(
-    amount: 100.00, // Amount
-    currency: PaymentRequest::CURRENCY_EUR, // Currency
-    message: 'Nejaka zprava co uvidi vlastnik uctu pri prijeti platby', // Message
-    iban: 'CZ650 0000000000000000000000', // IBAN
-    bic: 'FIOBCZPPXXX', // BIC
-    recipientName: 'Recipient name', // Recipient name - Only for SEPA QR
+### SK — Slovenská QR platba (Pay by Square)
 
+Pro slovenské banky použij EUR + IBAN + parametr `country: COUNTRY_SK`.
+Bez `country: 'SK'` by se vygenerovala SEPA, kterou slovenské banky méně podporují.
+
+```php
+$qr = new QrCodeGenerator();
+$request = new PaymentRequest(
+    amount: 100.00,
+    currency: PaymentRequest::CURRENCY_EUR,
+    message: 'Platba za sluzby',
+    variableSymbol: '123456789',
+    iban: 'SK6807200002891987426353',
+    country: PaymentRequest::COUNTRY_SK, // klíčové: vynutí formát Pay by Square
 );
-header('Content-Type: '.'image/png');
-echo $qr->getQrCode(qrData: $request->getQrCodeData(),qrLabel: 'Děkujeme za zaplacení!')->getString();
+header('Content-Type: image/png');
+echo $qr->getQrCode(qrData: $request->getQrCodeData(), qrLabel: 'Ďakujeme!')->getString();
+```
+
+### EU — SEPA platba
+
+Pro mezinárodní EUR / cizoměnové platby v rámci SEPA. Bez `country` parametru
+(nebo s `country: null`) se použije evropský standard.
+
+```php
+$qr = new QrCodeGenerator();
+$request = new PaymentRequest(
+    amount: 100.00,
+    currency: PaymentRequest::CURRENCY_EUR,
+    message: 'Nejaka zprava co uvidi vlastnik uctu pri prijeti platby',
+    iban: 'CZ6500000000000000000000',
+    bic: 'FIOBCZPPXXX',
+    recipientName: 'Recipient name', // Pouze pro SEPA QR
+);
+header('Content-Type: image/png');
+echo $qr->getQrCode(qrData: $request->getQrCodeData(), qrLabel: 'Děkujeme za zaplacení!')->getString();
 ```
 
 ```php

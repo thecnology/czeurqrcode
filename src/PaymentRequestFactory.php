@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace thecnology\czeurqrcode;
 
+use Rikudou\Iban\Iban\IBAN;
+use rikudou\SkQrPayment\QrPayment;
 use SepaQr\SepaQrData;
 use Sunfox\Spayd\Model\CzechAccount;
 use Sunfox\Spayd\Spayd;
@@ -41,5 +43,13 @@ class PaymentRequestFactory
     public function computeIban(CzechAccount $account): string
     {
         return IbanUtilities::computeIbanFromBankAccount($account);
+    }
+
+    /**
+     * Vytvoří instanci QrPayment pro slovenskou Pay by Square platbu
+     */
+    public function createPayBySquare(string $iban): QrPayment
+    {
+        return new QrPayment(new IBAN($iban));
     }
 }
